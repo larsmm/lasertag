@@ -9,14 +9,28 @@ lasertag-Spiel auf ESP32-Basis. Jeder Spieler erhält einen Markierer mit Infrar
 - [ ] Effekte über ansteuerbare LED-Streifen und Sound
 - [ ] Weste per Bluetooth oder WLAN angebunden
 
-## Projektstand
-Proof of concept. Es gibt Testhardware auch Lochrasterplatine. Peripherie wie IR-LED, Display, Buttons, ... können angesprochen werden. IR senden und empfagen mit CRC16 Fehlerorrektur funktioniert.
-
 ## Hardware
-Momentan wird ein TTGO BTC T4 Modul genutzt welches schon recht viel bietet: Display, Akkuladeschaltung, An-Aus, 3 Buttons, ESP32 mit extra 4MB RAM, MicroSD-Slot, gerausgeführte IOs. 
+Momentan wird ein TTGO BTC T4 Modul genutzt welches schon recht viel bietet. Das Modul wird auf eine noch zu designende Platine gesteckt. Später soll es emehrere zusammenlöt- oder steckbare Platinen geben die zusammen die Form des Markierers bilden. Griff und ähnliches werden 3D gedruckt. Display, Akkuladeschaltung, An-Aus, 3 Buttons, ESP32 mit extra 4MB RAM, MicroSD-Slot, gerausgeführte IOs.
 
 ## Software
-Das ganze soll in Micropython laufen. Die Firmware von badge.team wird aktiv weiter entwickelt und ist schon sehr mächtig.
+Die Firmware von badge.team dient als Basis. Sie stellt eine Micropython Umgebung mit App-Store und viel unterstützter Hardware bereit.
+
+## Projektstand
+Proof of concept. Es gibt Testhardware auch Lochrasterplatine. Die Peripherie kann bereits angesprochen werden:
+- [x] IR-LED, IR-Empfänger: Senden und empfangen von UART-Bytes mit CRC16 Checksumme 38 kHz moduliert
+- [x] Display: Anzeigen von Text, Linien, Rechtecken, ...
+- [x] Buttons
+- [x] SK6812 einzeln ansteuerbare LEDs
+- [x] Laserpointer
+
+ToDo:
+- [ ] Testcode für Peripherie
+- [ ] Zuverlässige Fehlerkorrektur finden (CRC16 auf 2 Datenbytes reicht nicht)
+- [ ] Testcode für Markieren und getroffen werden
+- [ ] Reichweitentests, Schaltung mit FETs für IR-Sender entwickeln
+- [ ] Platine designen und Prototypen fertigen lassen
+- [ ] Gutes Konzept für Audio finden und umsetzen
+- [ ] Dieses Git schöner strukturieren
 
 ## Initial Setup
 Wir starten mit einem frischen Debian Testing, es muss kein Desktop installiert werden.
@@ -64,7 +78,7 @@ cp ./firmware/python_modules/ttgo-t4/* ./firmware/python_modules/lasertag -r
 clone lasertag git:
 ```
 git clone https://github.com/larsmm/lasertag.git ./firmware/python_modules/lasertag/lasertag
-mv ./firmware/python_modules/lasertag/lasertag/root_dir/*.* /firmware/python_modules/lasertag
+mv ./firmware/python_modules/lasertag/lasertag/root_dir/* ./firmware/python_modules/lasertag
 ```
 
 add this to beginning of build.sh (make clean is buggy):
@@ -78,16 +92,19 @@ Put code in ./firmware/python_modules/lasertag or ./firmware/python_modules/lase
 
 Build:
 ```
+export PATH="$PATH:/root/ESP32-platform-firmware/xtensa-esp32-elf/bin"
 ./build.sh
 ```
 
 Connect USB and Flash:
 ```
+export PATH="$PATH:/root/ESP32-platform-firmware/xtensa-esp32-elf/bin"
 ./flash.sh
 ```
 
 Console to test code:
 ```
+export PATH="$PATH:/root/ESP32-platform-firmware/xtensa-esp32-elf/bin"
 ./monitor.sh
 ```
 - Ctrl+]  Exit program
